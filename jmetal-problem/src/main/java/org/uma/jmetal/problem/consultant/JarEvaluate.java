@@ -54,10 +54,10 @@ public class JarEvaluate {
 	}
 
 	// Calls the jar with the correct parameters and gets the output
-	private static String readOutputFromJar(String jarName, int numOfObjectives, int numOfVariables, String variables) {
+	private static String readOutputFromJar(String jarPath, int numOfObjectives, int numOfVariables, String variables) {
 		String quality = "";
 		try {
-			String[] cmd = { "java", "-jar", "../jars/" + jarName, String.valueOf(numOfObjectives),
+			String[] cmd = { "java", "-jar", jarPath, String.valueOf(numOfObjectives),
 					String.valueOf(numOfVariables), variables };
 
 			Process p = Runtime.getRuntime().exec(cmd);

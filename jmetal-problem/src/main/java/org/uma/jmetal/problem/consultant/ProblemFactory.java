@@ -13,8 +13,8 @@ public class ProblemFactory {
 		numOfVariables = Integer.parseInt(problemDescr[1]);
 		numOfObjectives = Integer.parseInt(problemDescr[2]);
 		typeOfVariables = problemDescr[3];
-		upperBound = problemDescr[4];
-		lowerBound = problemDescr[5];
+		lowerBound = problemDescr[4];
+		upperBound = problemDescr[5];
 		integration = problemDescr[6];
 
 		Problem<?> result = null;
