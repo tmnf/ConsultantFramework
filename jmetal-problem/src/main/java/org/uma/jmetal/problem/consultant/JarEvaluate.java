@@ -25,6 +25,17 @@ public class JarEvaluate {
 			parseValuesAndSetObjectives(solution, quality.split(";"));
 	}
 
+	public static String evaluateWithJar(String solution, int objectives, int numVariables, String jarName) {
+		String x = solution.replace(" ", ";");
+
+		String quality = readOutputFromJar(jarName, objectives, numVariables, x.substring(0, x.length() - 1));
+
+		if (quality != null)
+			return quality.replace(";", " ");
+
+		return "";
+	}
+
 	// Parses the string received from the jar to the correct type and sets the
 	// final objectives
 	private static void parseValuesAndSetObjectives(Solution<?> solution, String[] quality) {
@@ -57,8 +68,8 @@ public class JarEvaluate {
 	private static String readOutputFromJar(String jarPath, int numOfObjectives, int numOfVariables, String variables) {
 		String quality = "";
 		try {
-			String[] cmd = { "java", "-jar", jarPath, String.valueOf(numOfObjectives),
-					String.valueOf(numOfVariables), variables };
+			String[] cmd = { "java", "-jar", jarPath, String.valueOf(numOfObjectives), String.valueOf(numOfVariables),
+					variables };
 
 			Process p = Runtime.getRuntime().exec(cmd);
 			p.waitFor();

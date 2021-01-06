@@ -8,4 +8,8 @@ public class WebserviceEvaluate {
 
 	}
 
+	public static String evaluateWithService(String solution) {
+		return "";
+	}
+
 }

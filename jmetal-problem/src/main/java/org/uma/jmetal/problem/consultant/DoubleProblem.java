@@ -11,20 +11,21 @@ public class DoubleProblem extends AbstractDoubleProblem {
 
 	private String integration;
 
-	public DoubleProblem(String problem, int numberOfVariables, int numOfObjectives, String upperBound,
-			String lowerBound, String integration) {
-		setNumberOfVariables(numberOfVariables);
-		setNumberOfObjectives(numOfObjectives);
-		setName(problem);
+	public DoubleProblem(InputProblem problem) {
+		setNumberOfVariables(problem.getVariables().size());
+		setNumberOfObjectives(problem.getObjectives());
+		setName(problem.getName());
 
-		this.integration = integration;
+		this.integration = problem.getMethod();
 
-		List<Double> lowerLimit = new ArrayList<>(getNumberOfVariables());
 		List<Double> upperLimit = new ArrayList<>(getNumberOfVariables());
+		List<Double> lowerLimit = new ArrayList<>(getNumberOfVariables());
 
 		for (int i = 0; i < getNumberOfVariables(); i++) {
-			upperLimit.add(Double.parseDouble(upperBound));
-			lowerLimit.add(Double.parseDouble(lowerBound));
+			Variable var = problem.getVariables().get(i);
+			
+			upperLimit.add(var.getMax());
+			lowerLimit.add(var.getMin());
 		}
 
 		setLowerLimit(lowerLimit);

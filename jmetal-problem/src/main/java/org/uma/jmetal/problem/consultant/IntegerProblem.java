@@ -11,20 +11,21 @@ public class IntegerProblem extends AbstractIntegerProblem {
 
 	private String integration;
 
-	public IntegerProblem(String problem, int numberOfVariables, int numOfObjectives, String upperBound,
-			String lowerBound, String integration) {
-		setNumberOfVariables(numberOfVariables);
-		setNumberOfObjectives(numOfObjectives);
-		setName(problem);
+	public IntegerProblem(InputProblem problem) {
+		setNumberOfVariables(problem.getVariables().size());
+		setNumberOfObjectives(problem.getObjectives());
+		setName(problem.getName());
 
-		this.integration = integration;
+		this.integration = problem.getMethod();
 
-		List<Integer> lowerLimit = new ArrayList<>(getNumberOfVariables());
 		List<Integer> upperLimit = new ArrayList<>(getNumberOfVariables());
+		List<Integer> lowerLimit = new ArrayList<>(getNumberOfVariables());
 
 		for (int i = 0; i < getNumberOfVariables(); i++) {
-			upperLimit.add(Integer.parseInt(upperBound));
-			lowerLimit.add(Integer.parseInt(lowerBound));
+			Variable var = problem.getVariables().get(i);
+
+			upperLimit.add((int) var.getMax());
+			lowerLimit.add((int) var.getMin());
 		}
 
 		setLowerLimit(lowerLimit);
@@ -37,5 +38,12 @@ public class IntegerProblem extends AbstractIntegerProblem {
 			JarEvaluate.evaluateDoublesWithJar(solution, integration);
 		else
 			WebserviceEvaluate.evaluateWithService(solution);
+	}
+
+	public String evaluate(String solution) {
+		if (integration.contains(".jar"))
+			return JarEvaluate.evaluateWithJar(solution, getNumberOfObjectives(), getNumberOfVariables(), integration);
+		else
+			return WebserviceEvaluate.evaluateWithService(solution);
 	}
 }

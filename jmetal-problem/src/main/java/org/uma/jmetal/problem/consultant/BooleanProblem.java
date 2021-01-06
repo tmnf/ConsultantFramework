@@ -8,12 +8,12 @@ public class BooleanProblem extends AbstractBinaryProblem {
 
 	private String integration;
 
-	public BooleanProblem(String problem, int numberOfVariables, int numOfObjectives, String integration) {
-		setNumberOfVariables(numberOfVariables);
-		setNumberOfObjectives(numOfObjectives);
-		setName(problem);
+	public BooleanProblem(InputProblem problem) {
+		setNumberOfVariables(problem.getVariables().size());
+		setNumberOfObjectives(problem.getObjectives());
+		setName(problem.getName());
 
-		this.integration = integration;
+		this.integration = problem.getMethod();
 	}
 
 	@Override
@@ -27,5 +27,12 @@ public class BooleanProblem extends AbstractBinaryProblem {
 	@Override
 	protected int getBitsPerVariable(int index) {
 		return 0;
+	}
+
+	public String evaluate(String solution) {
+		if (integration.contains(".jar"))
+			return JarEvaluate.evaluateWithJar(solution, getNumberOfObjectives(), getNumberOfVariables(), integration);
+		else
+			return WebserviceEvaluate.evaluateWithService(solution);
 	}
 }

@@ -4,64 +4,86 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.uma.jmetal.algorithm.Algorithm;
-import org.uma.jmetal.algorithm.multiobjective.nsgaii.NSGAIIBuilder;
-import org.uma.jmetal.operator.impl.crossover.SBXCrossover;
-import org.uma.jmetal.operator.impl.mutation.PolynomialMutation;
-import org.uma.jmetal.problem.Problem;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.uma.jmetal.problem.consultant.BooleanProblem;
 import org.uma.jmetal.problem.consultant.DoubleProblem;
-import org.uma.jmetal.problem.consultant.ProblemFactory;
+import org.uma.jmetal.problem.consultant.InputProblem;
+import org.uma.jmetal.problem.consultant.IntegerProblem;
+import org.uma.jmetal.problem.consultant.Variable;
 import org.uma.jmetal.solution.DoubleSolution;
-import org.uma.jmetal.util.experiment.Experiment;
-import org.uma.jmetal.util.experiment.ExperimentBuilder;
-import org.uma.jmetal.util.experiment.component.ExecuteAlgorithms;
-import org.uma.jmetal.util.experiment.util.ExperimentAlgorithm;
 import org.uma.jmetal.util.experiment.util.ExperimentProblem;
 
 public class ADS {
-	private static final int INDEPENDENT_RUNS = 1;
-	private static final String experimentBaseDirectory = "ADS-Solutions-And-Results";
 
 	public static void main(String[] args) throws IOException {
 
-		List<ExperimentProblem<DoubleSolution>> problemList = new ArrayList<>();
+		List<InputProblem> problems = jsonToProblemList(args[0]);
 
-		Problem<?> problem = ProblemFactory.generateProblem(args);
+		List<IntegerProblem> integerProblems = new ArrayList<>();
+		List<ExperimentProblem<DoubleSolution>> doubleProblems = new ArrayList<>();
+		List<BooleanProblem> booleanProblems = new ArrayList<>();
 
-		if (problem instanceof DoubleProblem)
-			problemList.add(new ExperimentProblem<>((DoubleProblem) problem));
-		else if (problem instanceof DoubleProblem)
-			problemList.add(new ExperimentProblem<>((DoubleProblem) problem));
-		else if (problem instanceof DoubleProblem)
-			problemList.add(new ExperimentProblem<>((DoubleProblem) problem));
-		else
-			throw new IllegalArgumentException("Invalid problem...");
-
-		List<ExperimentAlgorithm<DoubleSolution, List<DoubleSolution>>> algorithmList = configureAlgorithmList(
-				problemList);
-
-		Experiment<DoubleSolution, List<DoubleSolution>> experiment = new ExperimentBuilder<DoubleSolution, List<DoubleSolution>>(
-				"ADS").setAlgorithmList(algorithmList).setProblemList(problemList)
-						.setExperimentBaseDirectory(experimentBaseDirectory).setOutputParetoFrontFileName("FUN")
-						.setOutputParetoSetFileName("VAR").setReferenceFrontDirectory("/pareto_fronts")
-						.setIndependentRuns(INDEPENDENT_RUNS).setNumberOfCores(4).build();
-
-		new ExecuteAlgorithms<>(experiment).run();
-	}
-
-	static List<ExperimentAlgorithm<DoubleSolution, List<DoubleSolution>>> configureAlgorithmList(
-			List<ExperimentProblem<DoubleSolution>> problemList) {
-		List<ExperimentAlgorithm<DoubleSolution, List<DoubleSolution>>> algorithms = new ArrayList<>();
-
-		for (int run = 0; run < INDEPENDENT_RUNS; run++) {
-			for (int i = 0; i < problemList.size(); i++) {
-				Algorithm<List<DoubleSolution>> algorithm = new NSGAIIBuilder<>(problemList.get(i).getProblem(),
-						new SBXCrossover(1.0, 5),
-						new PolynomialMutation(1.0 / problemList.get(i).getProblem().getNumberOfVariables(), 10.0))
-								.setMaxEvaluations(1000).setPopulationSize(100).build();
-				algorithms.add(new ExperimentAlgorithm<>(algorithm, "ADS", problemList.get(i), run));
+		for (InputProblem p : problems) {
+			switch (p.getMethod()) {
+			case "Integer":
+				integerProblems.add(new IntegerProblem(p));
+				break;
+			case "Double":
+				doubleProblems.add(new ExperimentProblem<>((new DoubleProblem(p))));
+				break;
+			case "Boolean":
+				booleanProblems.add(new BooleanProblem(p));
+				break;
+			default:
+				break;
 			}
 		}
-		return algorithms;
+
+		if (!integerProblems.isEmpty())
+			ProblemUtils.runIntegerAlgorithm(integerProblems);
+
+		if (!doubleProblems.isEmpty())
+			ProblemUtils.runDoubleAlgorithm(doubleProblems);
+
+		if (!booleanProblems.isEmpty())
+			ProblemUtils.runBinaryAlgorithm(booleanProblems);
+
 	}
+
+	private static ArrayList<InputProblem> jsonToProblemList(String jsonString) {
+		JSONObject jsonData = new JSONObject(jsonString);
+
+		ArrayList<InputProblem> problems = new ArrayList<>();
+
+		JSONArray jsonProblems = jsonData.getJSONArray("problems");
+
+		for (int i = 0; i < jsonProblems.length(); i++) {
+			JSONObject aux = jsonProblems.getJSONObject(i);
+
+			InputProblem prob = new InputProblem();
+			prob.setName(aux.getString("problem"));
+			prob.setType(aux.getString("type"));
+			prob.setMethod(aux.getString("evaluate"));
+			prob.setObjectives(aux.getInt("objectives"));
+
+			JSONArray variablesAux = aux.getJSONArray("variables");
+			for (int j = 0; j < variablesAux.length(); j++) {
+				JSONObject var = variablesAux.getJSONObject(j);
+
+				Variable variable = new Variable();
+				variable.setName(var.getString("name"));
+				variable.setType(aux.getString("Type"));
+				variable.setMax(var.getDouble("max"));
+				variable.setMin(var.getDouble("min"));
+
+				prob.addVariable(variable);
+			}
+
+			problems.add(prob);
+		}
+
+		return problems;
+	}
+
 }
