@@ -48,6 +48,7 @@ public class ProblemUtils {
 	 * ===========================
 	 */
 	public static void runDoubleAlgorithm(List<ExperimentProblem<DoubleSolution>> doubleProblems) {
+		System.out.println("Entrou");
 		List<ExperimentAlgorithm<DoubleSolution, List<DoubleSolution>>> algorithmList = configureDoubleAlgorithmList(
 				doubleProblems);
 
@@ -64,6 +65,7 @@ public class ProblemUtils {
 			List<ExperimentProblem<DoubleSolution>> problemList) {
 		List<ExperimentAlgorithm<DoubleSolution, List<DoubleSolution>>> algorithms = new ArrayList<>();
 
+		System.out.println("Correu");
 		for (int run = 0; run < INDEPENDENT_RUNS; run++) {
 			for (int i = 0; i < problemList.size(); i++) {
 				Algorithm<List<DoubleSolution>> algorithm = new NSGAIIBuilder<>(problemList.get(i).getProblem(),

@@ -4,16 +4,18 @@ import java.util.ArrayList;
 
 public class InputProblem {
 
-	private String name, type, method;
+	private String name, type, method, better;
 
 	private int objectives;
 
 	private ArrayList<Variable> variables = new ArrayList<>();
 
-	public InputProblem(String name, String type, String method, int objectives, ArrayList<Variable> variables) {
+	public InputProblem(String name, String type, String method, String better, int objectives,
+			ArrayList<Variable> variables) {
 		this.name = name;
 		this.type = type;
 		this.method = method;
+		this.better = better;
 		this.variables = variables;
 	}
 
@@ -63,5 +65,13 @@ public class InputProblem {
 
 	public void setObjectives(int objectives) {
 		this.objectives = objectives;
+	}
+
+	public void setBetter(String better) {
+		this.better = better;
+	}
+
+	public String getBetter() {
+		return better;
 	}
 }

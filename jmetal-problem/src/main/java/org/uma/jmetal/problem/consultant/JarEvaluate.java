@@ -15,6 +15,8 @@ public class JarEvaluate {
 	public static void evaluateDoublesWithJar(Solution<?> solution, String jarName) {
 		String x = "";
 
+		jarName = "evaluate.jar";
+		
 		for (int i = 0; i < solution.getNumberOfVariables(); i++)
 			x += solution.getVariableValue(i) + ";";
 

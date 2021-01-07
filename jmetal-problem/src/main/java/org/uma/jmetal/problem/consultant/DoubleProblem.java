@@ -33,7 +33,7 @@ public class DoubleProblem extends AbstractDoubleProblem {
 	}
 
 	public void evaluate(DoubleSolution solution) {
-		if (integration.contains(".jar"))
+		if (integration.contains("jar"))
 			JarEvaluate.evaluateDoublesWithJar(solution, integration);
 		else
 			WebserviceEvaluate.evaluateWithService(solution);
